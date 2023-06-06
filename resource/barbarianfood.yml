@@ -1,0 +1,392 @@
+openapi: 3.0.3
+info:
+  title: BarbarianFoodAPI
+  description: 'example'
+  version: 1.0.0
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - auth
+      description: Endpoint used to create an account
+      operationId: signUp
+      requestBody:
+        description: Sign up request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+        '433':
+          description: Email taken
+  /auth/signin:
+    post:
+      tags:
+        - auth
+      description: Endpoint used to access existing account
+      operationId: signIn
+      requestBody:
+        description: Sign in request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignInResponse'
+        '400':
+          description: If account wasn't found
+        '433':
+          description: Data is incorrect
+  /settings/payment:
+    post:
+      tags:
+        - settings
+      description: Endpoint used to edit payment settings
+      operationId: editPaymentInformation
+      requestBody:
+        description: Payment settings request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentSettingsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+        '433':
+          description: Data is incorrect
+  /settings/profile:
+    post:
+      tags:
+        - settings
+      description: Endpoint used to edit profile settings
+      operationId: editProfileInformation
+      requestBody:
+        description: Profile settings request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileSettingsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+        '433':
+          description: Data is incorrect
+  /settings/address:
+    post:
+      tags:
+        - settings
+      description: Endpoint used to edit address settings
+      operationId: editAddressInformation
+      requestBody:
+        description: Address settings request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressSettingsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+        '433':
+          description: Data is incorrect
+  /offer/all:
+    get:
+      tags:
+        - offer
+      description: Endpoint used to list every available subscription to customer
+      operationId: getOffer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetOfferResponse'
+        '433':
+          description: Listing error
+  /offer/details/{id}:
+    get:
+      tags:
+        - offer
+      description: Endpoint used to list details about selected offer
+      operationId: getOfferDetails
+      parameters:
+        - name: id
+          in: path
+          description: id of requested offer
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetOfferDetailsResponse'
+        '433':
+          description: Error while getting details
+  /offer/subscribe/{id}:
+    post:
+      tags:
+        - offer
+      description: Endpoint used to subscribe to the offer
+      operationId: subscribeToOffer
+      parameters:
+        - name: id
+          in: path
+          description: id of requested offer
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscribeRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+        '433':
+          description: Subscription error
+  /admin/list/users:
+    get:
+      tags:
+        - admin
+      description: Endpoint used to list all users
+      operationId: listAllUsers
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAllUsersResponse'
+        '433':
+          description: Listing error
+  /admin/list/offer:
+    get:
+      tags:
+        - admin
+      description: Endpoint used to list all offers
+      operationId: listAllOffers
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetOfferResponse'
+        '433':
+          description: Listing error
+    post:
+      tags:
+        - admin
+      description: Endpoint used to add new offer
+      operationId: addNewOffer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddNewOfferRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+        '433':
+          description: Listing error
+
+components:
+  schemas:
+    SubscribeRequest:
+      type: object
+      properties:
+        token:
+          type: string
+        periodStart:
+          type: string
+          format: date
+        periodEnd:
+          type: string
+          format: date
+    SignInResponse:
+      type: object
+      properties:
+        token:
+          type: string
+    SignUpRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        surname:
+          type: string
+    SignInRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    PaymentSettingsRequest:
+      type: object
+      properties:
+        creditCardNumber:
+          type: string
+        creditCardOwner:
+          type: string
+        creditCardExpDate:
+          type: string
+          format: date
+        creditCardSecret:
+          type: string
+        token:
+          type: string
+    AddressSettingsRequest:
+      type: object
+      properties:
+        street:
+          type: string
+        buildingNumber:
+          type: integer
+        postalCode:
+          type: string
+        voivodeship:
+          type: string
+        city:
+          type: string
+        phoneNumber:
+          type: string
+        token:
+          type: string
+    ProfileSettingsRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        surname:
+          type: string
+        token:
+          type: string
+    GetOfferResponse:
+      type: object
+      properties:
+        offerList:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfferItem'
+    OfferItem:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        kcalRangeBottom:
+          type: integer
+        kcalRangeTop:
+          type: integer
+        cost:
+          type: number
+    GetOfferDetailsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        kcalRangeBottom:
+          type: integer
+        kcalRangeTop:
+          type: integer
+        period:
+          type: string
+          enum: ['short-term', 'long-term']
+        contraindications:
+          type: string
+        cost:
+          type: number
+    UserItem:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        activeSubscription:
+          type: string
+    ListAllUsersResponse:
+      type: object
+      properties:
+        usersList:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserItem'
+    AddNewOfferRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        kcalRangeBottom:
+          type: integer
+        kcalRangeTop:
+          type: integer
+        period:
+          type: string
+          enum: [ 'short-term', 'long-term' ]
+        contraindications:
+          type: string
+        cost:
+          type: number
+    DefaultResponse:
+      type: object
+      properties:
+        message:
+          type: string
