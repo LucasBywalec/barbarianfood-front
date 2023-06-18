@@ -2,9 +2,9 @@ import { ReactNode } from 'react';
 import {
   Box,
   Flex,
+  Link,
   Avatar,
   HStack,
-  Link,
   IconButton,
   Button,
   Menu,
@@ -14,10 +14,20 @@ import {
   useDisclosure,
   useColorModeValue,
   Stack,
+  Image
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import { Link as RLink, useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie'
 
-const Links = ['About', 'Offer'];
+const Links = [
+  {
+    name: 'About', page: '/about'
+  },
+  {
+    name: 'Offer', page: '/main'
+  }
+]
 
 const NavLink = ({ children }: { children: ReactNode }) => (
   <Link
@@ -35,6 +45,12 @@ const NavLink = ({ children }: { children: ReactNode }) => (
 
 export const NavBar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
+
+  const logOut = () => {
+    Cookies.remove('token');
+    navigate('/')
+  }
 
   return (
     <>
@@ -48,13 +64,15 @@ export const NavBar = () => {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={'center'}>
-            <Box>Logo</Box>
+            <Image src="#" alt="Logo"/>
             <HStack
               as={'nav'}
               spacing={4}
               display={{ base: 'none', md: 'flex' }}>
               {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
+                <RLink to={link.page}>
+                  <NavLink key={link.name}>{link.name}</NavLink>
+                </RLink>
               ))}
             </HStack>
           </HStack>
@@ -74,8 +92,8 @@ export const NavBar = () => {
                 />
               </MenuButton>
               <MenuList>
-                <MenuItem>Settings</MenuItem>
-                <MenuItem>Log out</MenuItem>
+                <MenuItem onClick={() => {navigate('/settings')}}>Settings</MenuItem>
+                <MenuItem onClick={logOut}>Log out</MenuItem>
               </MenuList>
             </Menu>
           </Flex>
@@ -85,14 +103,12 @@ export const NavBar = () => {
           <Box pb={4} display={{ md: 'none' }}>
             <Stack as={'nav'} spacing={4}>
               {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
+                <NavLink key={link.name}>{link.name}</NavLink>
               ))}
             </Stack>
           </Box>
         ) : null}
       </Box>
-
-      <Box p={4}>Main Content Here</Box>
     </>
   );
 }

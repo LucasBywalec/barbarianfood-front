@@ -38,7 +38,7 @@ export const Base = () => {
 
             {/* Main Content */}
             <Box flex="1" backgroundColor="gray.100">
-                Main Content
+                
             </Box>
 
             {/* Footer */}

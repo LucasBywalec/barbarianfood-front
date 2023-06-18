@@ -5,6 +5,9 @@ import { Register } from './Register.tsx'
 import { Base } from './Base.tsx'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ChakraProvider } from '@chakra-ui/react'
+import { About } from './About.tsx'
+import { Settings } from './Settings.tsx'
+import { Admin } from './Admin.tsx'
 
 const router = createBrowserRouter([
   {
@@ -18,6 +21,18 @@ const router = createBrowserRouter([
   {
     path: "/main",
     element: <Base/>
+  },
+  {
+    path: "/about",
+    element: <About/>
+  },
+  {
+    path: "/settings",
+    element: <Settings/>
+  },
+  {
+    path: "/admin",
+    element: <Admin/>
   }
 ]);
 

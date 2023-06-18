@@ -26,7 +26,7 @@ export const Login = () => {
     .then(response => response.json())
     .then(data => {
       Cookies.set('token', data.token, {expires: 1, path: '/'});
-      navigate('/Base');
+      navigate('/main');
     })
     .catch(error => {
       console.error('Error:', error);
