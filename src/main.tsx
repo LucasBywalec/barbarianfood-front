@@ -5,8 +5,9 @@ import { Register } from './Register.tsx'
 import { Base } from './Base.tsx'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ChakraProvider } from '@chakra-ui/react'
-import { About } from './About.tsx'
+import { Details } from './Details.tsx'
 import { Settings } from './Settings.tsx'
+import { About } from './About.tsx'
 import { Admin } from './Admin.tsx'
 
 const router = createBrowserRouter([
@@ -23,12 +24,20 @@ const router = createBrowserRouter([
     element: <Base/>
   },
   {
-    path: "/about",
-    element: <About/>
+    path: '/details/:id', // Update the path to include a dynamic parameter
+    element: <Details />,
   },
   {
-    path: "/settings",
+    path: '/subscribe',
+    element: null
+  },
+  {
+    path: '/settings',
     element: <Settings/>
+  },
+  {
+    path: "/about",
+    element: <About/>
   },
   {
     path: "/admin",
