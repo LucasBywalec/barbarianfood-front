@@ -16,6 +16,8 @@ export const Login = () => {
 
     const body : SignInRequest = {email: email, password: password};
 
+    console.log(body)
+
     fetch('http://localhost:9090/auth/signin', {
       method: 'POST',
       headers: {
@@ -23,7 +25,7 @@ export const Login = () => {
       },
       body: JSON.stringify(body),
     })
-    .then(response => response.json())
+    .then(response =>response.json())
     .then(data => {
       Cookies.set('token', data.token, {expires: 1, path: '/'});
       navigate('/main');

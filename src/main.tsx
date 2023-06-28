@@ -9,6 +9,8 @@ import { Details } from './Details.tsx'
 import { Settings } from './Settings.tsx'
 import { About } from './About.tsx'
 import { Admin } from './Admin.tsx'
+import { Add } from './Add.tsx'
+import { Subscription } from './Subscription.tsx'
 
 const router = createBrowserRouter([
   {
@@ -42,6 +44,14 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: <Admin/>
+  },
+  {
+    path: "/admin/add",
+    element: <Add/>
+  },
+  {
+    path: "/sub",
+    element: <Subscription/>
   }
 ]);
 

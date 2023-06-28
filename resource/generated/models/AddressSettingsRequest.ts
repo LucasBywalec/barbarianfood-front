@@ -60,7 +60,7 @@ export interface AddressSettingsRequest {
      * @type {string}
      * @memberof AddressSettingsRequest
      */
-    token?: string;
+    token?: string; 
 }
 
 export function AddressSettingsRequestFromJSON(json: any): AddressSettingsRequest {

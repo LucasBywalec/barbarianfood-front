@@ -1,9 +1,13 @@
-import { Flex, FormControl, FormLabel, Input, Button } from '@chakra-ui/react';
+import { Flex, FormControl, FormLabel, Input, Button, HStack } from '@chakra-ui/react';
 import { useState, ChangeEvent } from 'react'
 import { ProfileSettingsRequest } from './../resource/generated/models/ProfileSettingsRequest' 
 import { PaymentSettingsRequest } from './../resource/generated/models/PaymentSettingsRequest'
 import { AddressSettingsRequest } from './../resource/generated/models/AddressSettingsRequest'
 import { NavBar } from './NavBar'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import Cookies from 'js-cookie';
+
 
 export const Settings = () => {
     const [profileData, setProfileData] = useState<ProfileSettingsRequest>({
@@ -11,14 +15,14 @@ export const Settings = () => {
         surname: '',
         email: '',
         password: '',
-        token: ''
+        token: Cookies.get('token')
     });
     const [paymentData, setPaymentData] = useState<PaymentSettingsRequest>({
         creditCardExpDate: undefined,
         creditCardNumber: undefined,
         creditCardOwner: '',
         creditCardSecret: '',
-        token: ''
+        token: Cookies.get('token')
     });
     const [addressData, setAddressData] = useState<AddressSettingsRequest>({
         street: '',
@@ -27,7 +31,7 @@ export const Settings = () => {
         postalCode: '',
         voivodeship: '',
         city: '',
-        token: ''
+        token: Cookies.get('token')
     });
 
     const onProfileDataChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -36,13 +40,6 @@ export const Settings = () => {
           [e.target.name]: e.target.value,
         }));
       };
-    
-      const sendProfileData = () => {
-        // Perform fetch request here to send the profile data
-        // Replace the console.log statement with your actual fetch code
-        console.log(profileData);
-      };
-    
     const onPaymentDataChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPaymentData((prevFormData) => ({
         ...prevFormData,
@@ -50,24 +47,88 @@ export const Settings = () => {
     }));
     };
 
-    const sendPaymentData = () => {
-    // Perform fetch request here to send the profile data
-    // Replace the console.log statement with your actual fetch code
-    console.log(paymentData);
-    };
-
     const onAddressDataChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
         setAddressData((prevFormData) => ({
-            ...prevFormData,
-            [e.target.name]: e.target.value,
+          ...prevFormData,
+          [name]: name === 'buildingNumber' ? Number(value) : value,
         }));
-        };
+      };
     
     const sendAddressData = () => {
-    // Perform fetch request here to send the profile data
-    // Replace the console.log statement with your actual fetch code
-    console.log(addressData);
+        console.log(addressData)
+        fetch('http://localhost:9090/settings/address', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(addressData),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+            // Handle the response data here
+            console.log(data);
+            })
+            .catch((error) => {
+            // Handle fetch error
+            console.error('Error sending address data:', error);
+            });
+        };
+    
+    const sendProfileData = () => {
+    fetch('http://localhost:9090/settings/profile', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+        // Handle the response data here
+        console.log(data);
+        })
+        .catch((error) => {
+        // Handle fetch error
+        console.error('Error sending profile data:', error);
+        });
     };
+
+    const sendPaymentData = () => {
+        // Remove the time portion from the creditCardExpDate string
+        const dateOnly = paymentData.creditCardExpDate.toISOString().split('T')[0];
+      
+        // Convert the creditCardExpDate to a string in the format YYYY-MM-DD
+        const dateParts = dateOnly.split('-'); // Split the date string into parts
+        const formattedDate = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`; // Rearrange the parts to the desired format
+      
+        console.log(formattedDate)
+
+        // Create a new object with the updated creditCardExpDate field
+        const formattedPaymentData = {
+          ...paymentData,
+          creditCardExpDate: formattedDate,
+        };
+      
+        console.log(paymentData);
+      
+        fetch('http://localhost:9090/settings/payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formattedPaymentData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Handle the response data here
+            console.log(data);
+          })
+          .catch((error) => {
+            // Handle fetch error
+            console.error('Error sending payment data:', error);
+          });
+      };
 
     return(
         <>
@@ -123,7 +184,7 @@ export const Settings = () => {
                         <FormLabel>Credit card number</FormLabel>
                         <Input
                         name="creditCardNumber"
-                        type="text"
+                        type="number"
                         value={paymentData.creditCardNumber}
                         onChange={onPaymentDataChange}
                         />
@@ -139,15 +200,26 @@ export const Settings = () => {
                         />
                     </FormControl>
 
+                    <HStack>
                     <FormControl id="creditCardExpDate">
-                        <FormLabel>Credit Card secret</FormLabel>
+                        <FormLabel>Credit Card exp. date</FormLabel>
                         <Input
-                        name="creditCardExpDate"
-                        type="date"
-                        value={paymentData.creditCardExpDate instanceof Date ? paymentData.creditCardExpDate.toLocaleDateString() : ''} //TODO
-                        onChange={onPaymentDataChange}
+                            as={DatePicker}
+                            name="creditCardExpDate"
+                            selected={paymentData.creditCardExpDate instanceof Date ? paymentData.creditCardExpDate : null}
+                            onChange={date => onPaymentDataChange({ target: { name: 'creditCardExpDate', value: date } })}
+                            dateFormat="dd.MM.yyyy"
+                            bg="white" // Example background color
+                            borderColor="gray.300" // Example border color
+                            borderRadius="md" // Example border radius
+                            p={2} // Example padding
+                            _focus={{
+                            outline: 'none',
+                            borderColor: 'blue.500' // Example focus border color
+                            }}
                         />
                     </FormControl>
+
 
                     <FormControl id="creditCardSecret">
                         <FormLabel>Credit Card secret</FormLabel>
@@ -158,6 +230,7 @@ export const Settings = () => {
                         onChange={onPaymentDataChange}
                         />
                     </FormControl>
+                    </HStack>
 
                     <Button colorScheme="teal" onClick={sendPaymentData}>
                         Submit
@@ -173,10 +246,10 @@ export const Settings = () => {
                         onChange={onAddressDataChange}
                         />
                     </FormControl>
-                    <FormControl id="building">
+                    <FormControl id="buildingNumber">
                         <FormLabel>Building no.</FormLabel>
                         <Input
-                        name="building"
+                        name="buildingNumber"
                         type="number"
                         value={addressData.buildingNumber}
                         onChange={onAddressDataChange}
@@ -185,10 +258,10 @@ export const Settings = () => {
                     <FormControl id="postal">
                         <FormLabel>Postal Code</FormLabel>
                         <Input
-                        name="postal"
-                        type="text"
-                        value={addressData.postalCode}
-                        onChange={onAddressDataChange}
+                            name="postalCode"
+                            type="text"
+                            value={addressData.postalCode}
+                            onChange={onAddressDataChange}
                         />
                     </FormControl>
                     <FormControl id="voivodeship">
@@ -212,14 +285,14 @@ export const Settings = () => {
                     <FormControl id="phone">
                         <FormLabel>Phone number</FormLabel>
                         <Input
-                        name="phone"
-                        type="text"
-                        value={addressData.phoneNumber}
-                        onChange={onAddressDataChange}
+                            name="phoneNumber"
+                            type="text"
+                            value={addressData.phoneNumber}
+                            onChange={onAddressDataChange}
                         />
                     </FormControl>
 
-                    <Button colorScheme="teal" onClick={sendPaymentData}>
+                    <Button colorScheme="teal" onClick={sendAddressData}>
                         Submit
                     </Button>
                 </Flex>

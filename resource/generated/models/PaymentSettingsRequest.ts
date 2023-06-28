@@ -19,35 +19,10 @@ import { exists, mapValues } from '../runtime';
  * @interface PaymentSettingsRequest
  */
 export interface PaymentSettingsRequest {
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymentSettingsRequest
-     */
-    creditCardNumber?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymentSettingsRequest
-     */
+    creditCardNumber?: number;
     creditCardOwner?: string;
-    /**
-     * 
-     * @type {Date}
-     * @memberof PaymentSettingsRequest
-     */
-    creditCardExpDate?: Date;
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymentSettingsRequest
-     */
+    creditCardExpDate?: string; // Change the type to string
     creditCardSecret?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PaymentSettingsRequest
-     */
     token?: string;
 }
 
@@ -60,29 +35,27 @@ export function PaymentSettingsRequestFromJSONTyped(json: any, ignoreDiscriminat
         return json;
     }
     return {
-        
-        'creditCardNumber': !exists(json, 'creditCardNumber') ? undefined : json['creditCardNumber'],
-        'creditCardOwner': !exists(json, 'creditCardOwner') ? undefined : json['creditCardOwner'],
-        'creditCardExpDate': !exists(json, 'creditCardExpDate') ? undefined : (new Date(json['creditCardExpDate'])),
-        'creditCardSecret': !exists(json, 'creditCardSecret') ? undefined : json['creditCardSecret'],
-        'token': !exists(json, 'token') ? undefined : json['token'],
+        creditCardNumber: !exists(json, 'creditCardNumber') ? undefined : json['creditCardNumber'],
+        creditCardOwner: !exists(json, 'creditCardOwner') ? undefined : json['creditCardOwner'],
+        creditCardExpDate: !exists(json, 'creditCardExpDate') ? undefined : json['creditCardExpDate'],
+        creditCardSecret: !exists(json, 'creditCardSecret') ? undefined : json['creditCardSecret'],
+        token: !exists(json, 'token') ? undefined : json['token'],
     };
 }
 
 export function PaymentSettingsRequestToJSON(value?: PaymentSettingsRequest | null): any {
     if (value === undefined) {
-        return undefined;
+      return undefined;
     }
     if (value === null) {
-        return null;
+      return null;
     }
     return {
-        
-        'creditCardNumber': value.creditCardNumber,
-        'creditCardOwner': value.creditCardOwner,
-        'creditCardExpDate': value.creditCardExpDate === undefined ? undefined : (value.creditCardExpDate.toISOString().substr(0,10)),
-        'creditCardSecret': value.creditCardSecret,
-        'token': value.token,
+      creditCardNumber: value.creditCardNumber,
+      creditCardOwner: value.creditCardOwner,
+      creditCardExpDate: value.creditCardExpDate ? value.creditCardExpDate.substr(0, 10) : undefined,
+      creditCardSecret: value.creditCardSecret,
+      token: value.token,
     };
-}
-
+  }
+  
